@@ -67,30 +67,30 @@ def print_hi(table,myList):
         return needList
 def send_url(field,url,endName):
     # fileTop = "C:\\Users\\31209\\Desktop\\11月工作相关\\对照表\\"
-    fileTop = "C:\\Users\\31209\\Desktop\\test\\"
+    fileTop = "C:\\Users\\31209\\Desktop\\someFile\\润e\\11月工作相关\\对照表\\"
     #物料
     if("mate"==field or "mblnr"==field
             or "commodity_code"==field or "product_code"==field):
-        url += "&name=(物料)" + endName + ".txt"
+        url += "&name=(物料)-" + endName + ".txt"
         fileName = fileTop+"UAT新旧物料对照.xlsx"
     #采购订单
     elif("sap_ebeln"==field or "ebeln"==field or
          "transfer_sap_ebeln"==field or "procure_order_code"==field
          or "purchase_code"==field or "potype"==field):
-        url += "&name=(采购订单号)" + endName + ".txt"
+        url += "&name=(采购订单号)-" + endName + ".txt"
         fileName = fileTop + "UAT 采购订单对照表.xlsx"
     #todo or "SAP_CODE"==field 生成member的时候
     elif ("member_sap_code" == field):
-        url += "&name=(客商代码)" + endName + ".txt"
+        url += "&name=(客商代码)-" + endName + ".txt"
         fileName = fileTop + "UAT 客商对照表.xlsx"
     elif ("supplier_code" == field or "SAP_CODE"==field or "item_code"==field):
-        url += "&name=(供应商)" + endName + ".txt"
+        url += "&name=(供应商)-" + endName + ".txt"
         fileName = fileTop + "UAT 客商对照表.xlsx"
     elif ("sap_tkonn" == field or "sap_contract_code"==field or "budget_sap_contract_code"==field):
-        url += "&name=(合同号)" + endName + ".txt"
+        url += "&name=(合同号)-" + endName + ".txt"
         fileName = fileTop + "UAT 合同对照表.xlsx"
     elif ("pay_type"==field or "contract_type" == field or "payment_method" == field ):
-        url += "&name=(合同类型)" + endName + ".txt"
+        url += "&name=(合同类型)-" + endName + ".txt"
         fileName = fileTop + "UAT 部分栏位对照表.xlsx"
     else:
         return 0
@@ -120,7 +120,7 @@ def getPatternStr():
         return myList
 
 if __name__ == '__main__':
-    table = "basic"
+    table = "order"
     # url = "http://localhost:80/uploadexcel?"
     # str = "type=t_ware_reissue_return&field=pay_type&name=(合同类型)移库单子表.txt"
     # pattern = re.compile(r'\d+')
