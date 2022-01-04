@@ -3,7 +3,6 @@ mblnr
 commodity_code
 product_code
 sap_ebeln
-ebeln
 transfer_sap_ebeln
 procure_order_code
 item_code

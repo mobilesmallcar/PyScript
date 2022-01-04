@@ -81,7 +81,7 @@ def send_url(field,url,endName):
         url += "&name=(物料)-" + endName + ".txt"
         fileName = fileTop+"UAT新旧物料对照.xlsx"
     #采购订单
-    elif("sap_ebeln"==field or "ebeln"==field or
+    elif("sap_ebeln"==field or
          "transfer_sap_ebeln"==field or "procure_order_code"==field
          or "purchase_code"==field or "potype"==field):
         url += "&name=(采购订单号)-" + endName + ".txt"
