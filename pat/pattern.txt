@@ -18,4 +18,5 @@ pay_type
 contract_type
 payment_method
 potype
-
+sap_vbeln
+sap_vble

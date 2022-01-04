@@ -9,6 +9,7 @@ import copy
 # 合同 size=10 00开头
 # 采购订单size=10 4开头   INTO `(.*?)` VALUES.*?\'([4]{1}[4-5]{1}\d{8}.*?)\'
 # 合同类型Z开头 4位        INTO `(.*?)` VALUES.*?\'([Z]{1}\d{3}.*?)\'
+# 出仓单0开头  10位       INTO `(.*?)` VALUES.*?\'([0]{1}[1|5]{1}\d{8}.*?)\'
 def print_hi(table,myList):
     with open("dataBase/"+table+".txt", "r+", encoding="utf-8") as f:
         lines = f.readlines();
@@ -21,6 +22,7 @@ def print_hi(table,myList):
         myPurchaseDict = {}
         myPayTypeDict = {}
         myIndefineDict = {}
+        myVbelnDict = {}
         while(i < len(lines)-1):
             line = lines[i]
             tableName = re.findall(r'CREATE TABLE `(.*?)`.*?\(', line)
@@ -43,6 +45,9 @@ def print_hi(table,myList):
             indefineDict = re.findall(r'INTO `(.*?)` VALUES.*?\'([0]{2}\d{8})\'',line)
             if (len(indefineDict) > 0):
                 myIndefineDict[indefineDict[0][0]] = indefineDict[0][1]
+            vbeln = re.findall(r'INTO `(.*?)` VALUES.*?\'([0]{1}[1|5]{1}\d{8})\'',line)
+            if(len(vbeln)>0):
+                myVbelnDict[vbeln[0][0]] = vbeln[0][1];
             name = re.findall(r'.*`(.*?)[`].*\'(.*?)\'',line,re.M)
             if(len(name)>0):
                 # print(name)
@@ -61,6 +66,8 @@ def print_hi(table,myList):
         print("方式:"+str(len(myPayTypeDict)))
         print(myIndefineDict)
         print("供应商\客商||合同:"+str(len(myIndefineDict)))
+        print(myVbelnDict)
+        print("出仓单:"+str(len(myVbelnDict)))
         # print("长相匹配应该生成"+str(len(myMateDict)+len(myPurchaseDict)
         #       +len(myPayTypeDict)+len(myIndefineDict)+"个txt"))
         print("======================")
@@ -92,6 +99,9 @@ def send_url(field,url,endName):
     elif ("pay_type"==field or "contract_type" == field or "payment_method" == field ):
         url += "&name=(合同类型)-" + endName + ".txt"
         fileName = fileTop + "UAT 部分栏位对照表.xlsx"
+    elif("sap_vbeln"==field or "sap_vble"==field):
+        url += "&name=(出仓单)-" +endName + ".txt"
+        fileName = fileTop + "SAP S4 出仓单销售订单对应表.XLSX"
     else:
         return 0
     param = {
@@ -120,7 +130,7 @@ def getPatternStr():
         return myList
 
 if __name__ == '__main__':
-    table = "order"
+    table = "storage"
     # url = "http://localhost:80/uploadexcel?"
     # str = "type=t_ware_reissue_return&field=pay_type&name=(合同类型)移库单子表.txt"
     # pattern = re.compile(r'\d+')
