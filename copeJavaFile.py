@@ -33,14 +33,12 @@ def find_des_by_remark(lines,i):
         temp = temp -1
         line = lines[temp]
         if("scription" in line):
-            print(line)
             urlName = re.findall(r"scription[:]?\s?([\w|-]+)[\n]",line)[0]
             if(urlName==''):
                 urlName = re.findall(r"scription[:]?\s?([\w|-]+)[\n]\s",line)[0]
             return find_url_by_mapping(lines[i],urlName)
         elif("/**" in line):
             line = lines[temp+1]
-            print(line)
             urlName = re.findall(r'.*?/*\s{0,5}([\w|-]+)[\n]',line)[0]
             if(urlName==''):
                 urlName = re.findall(r'.*?/*\s{0,5}([\w|-]+)\s',line)[0]
