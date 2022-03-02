@@ -89,27 +89,39 @@ def walk_dir(path, fileName):
                     return value_dir
 
 
-def match_url_by_url_mapping(absUrlPath):
-    with open(absUrlPath, 'r+', encoding='utf-8') as f:
-        lines = f.readlines()
-        global i, urlDict, newUrlDict, urlMapping, paramMapping
-        i = 1
-        while (i < len(lines) - 1):
-            line = return_new_line(lines, i)
-            if ("String" in line):
-                temp = re.findall(r'String\s{1,5}(\w{5,50})\s{0,5}', line)[0]
-                if (urlDict.__contains__(temp)):
-                    if (urlDict[temp] == None):
-                        find_des_by_mapping(lines, temp, i)
-                    trueUrl = re.findall(r'=\s{0,5}"(.*?)"', line)[0]
-                    uid = str(uuid.uuid4())
-                    suid = ''.join(uid.split('-'))
-                    paramMapping[suid] = {"reflectModel": tempServer, "reflectUrl": trueUrl,
-                                          "reflectName": urlDict[temp], "reflectMapping": temp}
-                    newUrlDict[trueUrl] = urlDict[temp]
-                    urlMapping[temp] = trueUrl
+def match_url_by_url_mapping(absUrlPath,isMapping):
+    if(isMapping):
+        with open(absUrlPath, 'r+', encoding='utf-8') as f:
+            lines = f.readlines()
+            global i, urlDict, newUrlDict, urlMapping, paramMapping
+            i = 1
+            while (i < len(lines) - 1):
+                line = return_new_line(lines, i)
+                if ("String" in line):
+                    temp = re.findall(r'String\s{1,5}(\w{5,50})\s{0,5}', line)[0]
+                    if (urlDict.__contains__(temp)):
+                        if (urlDict[temp] == None):
+                            find_des_by_mapping(lines, temp, i)
+                        trueUrl = re.findall(r'=\s{0,5}"(.*?)"', line)[0]
 
+                        build_dict(trueUrl,urlDict[temp],temp)
+                        urlDict.pop(temp)
+                        # newUrlDict[trueUrl] = urlDict[temp]
+                        # urlMapping[temp] = trueUrl
+    #补偿对于mapping里面不存在的url
+    for key,value in urlDict.items():
+        build_dict(key,value,None)
+    urlDict = {}
+    change_url_slash()
+def build_dict(key,value,mapping):
+    uuid = new_uuid()
+    paramMapping[uuid] = {"reflectModel": tempServer, "reflectUrl": key,
+                          "reflectName": value, "reflectMapping": mapping}
 
+def new_uuid():
+    uid = str(uuid.uuid4())
+    suid = ''.join(uid.split('-'))
+    return suid
 def find_controller(path):
     global server
     global tempServer
@@ -130,28 +142,33 @@ def find_controller(path):
     return True
 def printDict():
     global tempServer,server
-    mapping_dir = dir + "\itg-" + tempServer
+    if("itg" in dir):
+        mapping_dir = dir[:20]
+    else:
+        mapping_dir = dir + "\itg-" + tempServer
     print("mappingdir", mapping_dir)
     absUrlPath = walk_dir(mapping_dir, 'UrlMapping.java')
     print("mappingdir",absUrlPath)
-    match_url_by_url_mapping(absUrlPath)
-    change_url_slash()
+    #对于没有urlmapping文件的情况
+    flag = True
+    if(absUrlPath==None):
+        flag = False
+    match_url_by_url_mapping(absUrlPath,flag)
     print(len(urlDict))
-    print(urlDict)
+    print("urlDict",urlDict)
     print(len(newUrlDict))
-    print(newUrlDict)
+    print("newUrlDict",newUrlDict)
     print(len(urlMapping))
-    print(urlMapping)
+    print("urlMapping",urlMapping)
     print(len(paramMapping))
-    print(paramMapping)
+    print("paramMapping",paramMapping)
 
 
 def change_url_slash():
-    global newUrlDict
-    for key in newUrlDict:
-        if key[0:1] != "/":
-            newUrlDict['/' + key] = newUrlDict[key]
-            newUrlDict.pop(key)
+    for key,value in paramMapping.items():
+        url = value["reflectUrl"]
+        if url[0:1] != "/":
+            value["reflectUrl"] = "/"+url
 
 
 def find_url_and_name(fileName):
@@ -178,7 +195,7 @@ def find_url_and_name(fileName):
                     print("basicUrlName:" + basicUrlName)
 
             if (flag != True):
-                if ("Mapping(" in line):
+                if ("Mapping(" in line and "//" not in line):
                     line = lines[i - 1]
                     if ("@ApiOperation" in line):
                         urlName = re.findall(r'.*?@ApiOperation.*?"(.*?)"', line)[0]
