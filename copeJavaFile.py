@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import requests
 
 
 # def file_name(file_dir):
@@ -103,8 +104,8 @@ def match_url_by_url_mapping(absUrlPath):
                     trueUrl = re.findall(r'=\s{0,5}"(.*?)"', line)[0]
                     uid = str(uuid.uuid4())
                     suid = ''.join(uid.split('-'))
-                    paramMapping[suid] = {"reflect_model": server, "reflect_url": trueUrl,
-                                          "reflect_name": urlDict[temp], "reflect_mapping": temp}
+                    paramMapping[suid] = {"reflectModel": tempServer, "reflectUrl": trueUrl,
+                                          "reflectName": urlDict[temp], "reflectMapping": temp}
                     newUrlDict[trueUrl] = urlDict[temp]
                     urlMapping[temp] = trueUrl
 
@@ -116,7 +117,6 @@ def find_controller(path):
     tempServer = "basic"
     for root, dirs, files in os.walk(path):
         for file in files:
-
             if "Controller" in file:
                 if "target" not in root:
                     if ("com\\ry") in root:
@@ -126,12 +126,14 @@ def find_controller(path):
                         find_url_and_name(absFile)
             if tempServer != server and server != "":
                 printDict()
+                tempServer = server
     return True
 def printDict():
     global tempServer,server
     mapping_dir = dir + "\itg-" + tempServer
     print("mappingdir", mapping_dir)
     absUrlPath = walk_dir(mapping_dir, 'UrlMapping.java')
+    print("mappingdir",absUrlPath)
     match_url_by_url_mapping(absUrlPath)
     change_url_slash()
     print(len(urlDict))
@@ -142,7 +144,7 @@ def printDict():
     print(urlMapping)
     print(len(paramMapping))
     print(paramMapping)
-    tempServer = server
+
 
 def change_url_slash():
     global newUrlDict
@@ -199,7 +201,11 @@ def find_url_and_name(fileName):
                             #         print(lines[i])
                             #         find_url_by_mapping(lines[i], urlName)
 
-
+def call_interface_insert_url_info():
+    for key,value in paramMapping.items():
+        print(value)
+        r = requests.post("http://localhost:8003/n/reflectInterface/insertUrlInfo",json=value)
+        print(r.text)
 if __name__ == '__main__':
     # global i;
     # dir = r"F:\test"
@@ -211,3 +217,5 @@ if __name__ == '__main__':
     urlMapping = dict()
     paramMapping = dict()
     find_controller(dir)
+    printDict()
+    call_interface_insert_url_info()
