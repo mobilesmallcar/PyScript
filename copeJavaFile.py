@@ -70,10 +70,12 @@ def find_url_by_mapping(line, urlName):
             url = re.findall(r'.*?@\w{3,7}Mapping.*?"(.*?)"', line)[0]
             print("url", url)
         if (basicFlag == True):
-            if (basicUrlName[-1:] != "/"):
-                url = basicUrlName + url
-            else:
+            if (basicUrlName[-1:] != "/" and url[:1] != "/"):
+                url = basicUrlName + '/' + url
+            elif(basicUrlName[-1:] == "/" and url[:1] == "/"):
                 url = basicUrlName[:-1] + url
+            else:
+                url = basicUrlName + url
         urlDict[url] = urlName
         return url
     return False;
@@ -98,7 +100,7 @@ def match_url_by_url_mapping(absUrlPath,isMapping):
             while (i < len(lines) - 1):
                 line = return_new_line(lines, i)
                 if ("String" in line):
-                    temp = re.findall(r'String\s{1,5}(\w{5,50})\s{0,5}', line)[0]
+                    temp = re.findall(r'String\s{1,5}(\w{5,70})\s{0,5}', line)[0]
                     if (urlDict.__contains__(temp)):
                         if (urlDict[temp] == None):
                             find_des_by_mapping(lines, temp, i)
@@ -143,7 +145,7 @@ def find_controller(path):
 def printDict():
     global tempServer,server
     if("itg" in dir):
-        mapping_dir = dir[:20]
+        mapping_dir = dir[:21]
     else:
         mapping_dir = dir + "\itg-" + tempServer
     print("mappingdir", mapping_dir)
@@ -221,6 +223,7 @@ def find_url_and_name(fileName):
 def call_interface_insert_url_info():
     for key,value in paramMapping.items():
         print(value)
+        # if(len(value["reflectUrl"])>50):
         r = requests.post("http://localhost:8003/n/reflectInterface/insertUrlInfo",json=value)
         print(r.text)
 if __name__ == '__main__':
