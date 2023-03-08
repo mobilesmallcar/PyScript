@@ -52,9 +52,9 @@ def findEnter(driver, branches):
 
 def createCarbon(driver,timeList):
     timeEndYear = '2016'
-    timeEndMouth = 12
+    timeEndMouth = 13
     needbackYear = '2016'
-    currentMounth = 7
+    currentMounth = 12
     while(not(timeEndYear==needbackYear and timeEndMouth == currentMounth)):
         createButton = driver.find_element_by_xpath('/html/body/div/div/div[5]/div[2]/main/div/div/div/div[2]/div[1]/button[1]')
         createButton.click()
