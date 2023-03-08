@@ -15,7 +15,13 @@ def checkComplete(driver, groups):
     button = process.find_element_by_xpath('.//button')
     isPand = process.get_attribute('aria-expanded')
     if (isPand == 'false'):
-        button.click()
+        try:
+            button.click()
+        except:
+            dz = driver.execute_script("arguments[0].scrollIntoView();", button)
+            time.sleep(2)
+        finally:
+            button.click()
     inputs = process.find_elements_by_xpath(".//input")
     for input in inputs:
         canRead = input.get_attribute("readonly")
